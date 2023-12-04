@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/themes/base/jquery-ui.min.css"
+    integrity="sha512-ELV+xyi8IhEApPS/pSj66+Jiw+sOT1Mqkzlh8ExXihe4zfqbWkxPRi8wptXIO9g73FSlhmquFlUOuMSoXz5IRw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
+</head>
+<style>
+  ul {
+    display: inline;
+    float: left;
+    width: 50%;
+    height: 8em;
+    padding: auto;
+    /* background-color:aquamarine; */
+    top:20%;
+  }
+
+  ul {
+    /* background: greenyellow; */
+    justify-content: flex-start
+  }
+
+  ul li {
+    float: left;
+    width: 100px;
+    padding: 0.4em;
+    margin: 0 0.4em 0.4em 0;
+    text-align: center;
+  }
+
+  ul li h5 {
+    margin: 0 0 0.4em;
+    cursor: move;
+  }
+
+  ul li a {
+    float: right;
+  }
+
+  ul li h5 .ui-icon-zoomin {
+    float: left;
+  }
+
+  ul li img {
+    width: 100%;
+    cursor: move;
+  }
+
+  #farm1 {
+    float: left;
+    position: absolute;
+    bottom: -10px;
+    left: 0%;
+    width: 45%;
+    height: 15em;
+    padding: 1%;
+    background-color: #e4eee30f;
+    border: 10px ridge brown;
+    background-image: url('img/lawn-1504945_960_720.jpg ');
+
+
+
+  }
+
+  #farm2 {
+    display: inline;
+    float: right;
+    position: absolute;
+    bottom: -10px;
+    right: 0%;
+    width: 45%;
+    height: 15em;
+    padding: 1%;
+    background-color: #e4eee30f;
+    border: 10px ridge brown;
+    background-image: url('img/lawn-1504945_960_720.jpg ');
+
+
+  }
+
+  #farm1 h4,
+  #farm2 h4 {
+    line-height: 16px;
+    margin: 0 0 0.4em;
+  }
+
+  #farm1 h2 .ui-icon,
+  #farm2 h2 .ui-icon {
+    float: left;
+  }
+
+  #farm1 .gallery h5,
+  #farm2 .gallery h5 {
+    display: none;
+  }
+
+  #farm1 ul,
+  #farm2 ul {
+    width: 100%;
+
+  }
+
+  #quest {
+    position: absolute;
+    border: 2px solid black;
+    width: 70%;
+    /* display:flex; */
+    font-size: 50px;
+    background-color: #FFFAF0;
+    /* align-items: center; */
+    left: 15%
+  }
+
+  #animal {
+    float: left;
+    position: absolute;
+    bottom: 280px;
+    left: 0%;
+    border: 2px solid black;
+    align-items: center;
+    
+  }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+
+  $(function () {
+    // There's the gallery and the trash
+    var $gallery1 = $("#gallery1");
+    var $gallery2 = $("#gallery2");
+    var $farm1 = $("#farm1");
+    var $farm2 = $("#farm2");
+    var cnt3 = 0;
+    var cnt4 = 0;
+    $("li", $gallery1).draggable({
+      revert: "invaild",// when not dropped, the item will revert back to its initial position
+      containment: "document",
+      helper: "clone",
+      cursor: "move",
+    })
+    $("li", $gallery2).draggable({
+      cancel: "a.ui-icon",
+      revert: "invaild",// when not dropped, the item will revert back to its initial position
+      containment: "document",
+      helper: "clone",
+      cursor: "move",
+    })
+
+    // 放置
+    $farm1.droppable({
+      accept: "#gallery1 >li",
+      classes: { "ui-droppable-active": "ui-state-highlight" },
+      drop: function (event, ui) {
+        deleteImage1(ui.draggable);
+        // getResult(ui.draggable);
+      },
+    });
+    $farm2.droppable({
+      accept: "#gallery2 > li",
+      classes: { "ui-droppable-active": "ui-state-highlight" },
+      drop: function (event, ui) {
+        deleteImage2(ui.draggable);
+        // getResult(ui.draggable);
+      },
+
+    });
+    $gallery1.droppable({
+      accept: "#farm1 li",
+      classes: {
+        "ui-droppable-active": "custom-state-active"
+      },
+      drop: function (event, ui) {
+        recycleImage1(ui.draggable)
+        // getResult(ui.draggable);
+      }
+    })
+    $gallery2.droppable({
+      accept: "#farm2 li",
+      classes: {
+        "ui-droppable-active": "custom-state-active"
+      },
+      drop: function (event, ui) {
+        recycleImage2(ui.draggable)
+        // getResult(ui.draggable);
+      }
+    })
+
+    // Image deletion
+    function deleteImage1($item1) {
+      $item1.fadeOut(function () {
+        var $list1 = $("ul", $farm1).length ?
+          $("ul", $farm1) :
+          $("<ul class='gallery ui-helper-reset'/>").appendTo($farm1);
+
+        $item1.find("a.ui-icon-trash").remove();
+        $item1.appendTo($list1).fadeIn(function () {
+          $item1
+            .animate({ width: "100px" })
+            .find("img")
+            .animate({ height: "72pxx" })
+        })
+        var cnt1 = $("#farm1").children("ul").children()
+        cnt3 = cnt1.length
+        $("#result1").html(`${cnt3}`).css({ "color": "#FFFFFF", "font": "40px 'Noto Sans TC', sans-serif" })
+        // cnt3 = `${cnt1.length}`
+      })
+
+    }
+    function deleteImage2($item2) {
+      $item2.fadeOut(function () {
+        var $list2 = $("ul", $farm2).length ?
+          $("ul", $farm2) :
+          $("<ul class='gallery ui-helper-reset'/>").appendTo($farm2);
+
+        $item2.find("a.ui-icon-trash").remove();
+        $item2.appendTo($list2).fadeIn(function () {
+          $item2
+            .animate({ width: "100px" })
+            .find("img")
+            .animate({ height: "72pxx" })
+        })
+        cnt2 = $("#farm2").children("ul").children()
+        cnt4 = cnt2.length
+        $("#result2").html(`${cnt4}`).css({ "color": "#FFFFFF", "font": "40px 'Noto Sans TC', sans-serif" })
+        // cnt4 = `${cnt2.length}`
+      })
+    }
+
+    // Image recycle function
+    function recycleImage1($item1) {
+      $item1.fadeOut(function () {
+        $item1
+          .find("a.ui-icon-refresh")
+          .remove()
+          .end()
+          .css("width", "100px")
+          // .append(trash_icon)
+          .find("img")
+          .css("height", "72px")
+          .end()
+          .appendTo($gallery1)
+          .fadeIn();
+        var cnt1 = $("#farm1").children("ul").children()
+        cnt3 = cnt1.length
+        $("#result1").html(`${cnt1.length}`).css({ "color": "#FFFFFF", "font": "40px 'Noto Sans TC', sans-serif" })
+      })
+
+    }
+
+    function recycleImage2($item2) {
+      $item2.fadeOut(function () {
+        $item2
+          .find("a.ui-icon-refresh")
+          .remove()
+          .end()
+          .css("width", "100px")
+          // .append(trash_icon)
+          .find("img")
+          .css("height", "72px")
+          .end()
+          .appendTo($gallery2)
+          .fadeIn();
+        var cnt2 = $("#farm2").children("ul").children()
+        cnt4 = cnt2.length
+        $("#result2").html(`${cnt2.length}`).css({ "color": "#FFFFFF", "font": "40px 'Noto Sans TC', sans-serif" })
+      })
+    }
+
+   
+    let cow = getRandom(5)
+    let sheep = getRandom(5)
+    function getRandom(x) {
+      return Math.floor(Math.random() * x) + 1;
+    }
+
+    $('#result3').html(`一起來養動物吧!!! <br> 
+                        請幫忙抓
+                        <span style="color: red;font: 60px bold">${cow}</span>隻牛和
+                        <span style="color: red;font: 60px bold">${sheep}</span>隻羊`);
+
+    
+    $('button').click(function(){
+      // alert(`${cnt3+cnt4}`)
+      // alert(`${cow+sheep}`)
+      if (cnt3 == cow && cnt4 == sheep){
+      alert('答對了!!!')
+      location.reload()}
+      else {alert(`錯了!!!\r再試一次!!!!`)}
+    })
+
+
+  })
+</script>
+
+
+
+<body style="position:relative; height:650px;width:100%;background-color: #FFFF99">
+  <div id="quest">
+    <img src="img/tiger.jpg" alt="tiger" width="170px" height="170px" style="float:left;">
+    <div id="result3"></div><button style="width:120px;height:40px;font-size:20px;float:right;">確認</button>
+  </div>
+  <div id="animal" class="ui-widget ui-helper-clearfix" , style="display: inline; width:100%;">
+    <ul id="gallery1" class="gallery ui-helper-reset ui-helper-clearfix" style="float:left;">
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Cow 1</h5>
+        <img src="img/cow.jpg" alt="cow1" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Cow 2</h5>
+        <img src="img/cow.jpg" alt="cow2" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Cow 3</h5>
+        <img src="img/cow.jpg" alt="cow3" wwidth="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Cow 4</h5>
+        <img src="img/cow.jpg" alt="cow4" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Cow 5</h5>
+        <img src="img/cow.jpg" alt="cow5" width="100px" height="72px">
+      </li>
+    </ul>
+    <ul id="gallery2" class="gallery ui-helper-reset ui-helper-clearfix" style="float:right;">
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Sheep 1</h5>
+        <img src="img/sheep.png" alt="sheep1" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Sheep 2</h5>
+        <img src="img/sheep.png" alt="sheep2" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Sheep 3</h5>
+        <img src="img/sheep.png" alt="sheep3" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Sheep 4</h5>
+        <img src="img/sheep.png" alt="sheep4" width="100px" height="72px">
+      </li>
+      <li class="ui-widget-content ui-corner-tr">
+        <h5 class="ui-widget-header">Sheep 5</h5>
+        <img src="img/sheep.png" alt="sheep5" width="100px" height="72px">
+      </li>
+    </ul>
+  </div>
+
+  <div id="farm1" class="ui-widget-content ui-state-default">
+    <h2 class="ui-widget-header" style="text-align:center;">
+      <span>
+        牛牛的家
+      </span>
+    </h2>
+    <div id="result1"></div>
+  </div>
+  <div id="farm2" class="ui-widget-content ui-state-default">
+    <h2 class="ui-widget-header" style="text-align:center;"><span>羊羊的家</span></h2>
+    <div id="result2"></div>
+  </div>
+
+
+
+</body>
+
+</html>
